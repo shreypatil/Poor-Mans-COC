@@ -5,6 +5,7 @@ import get
 import buildings
 import sys,tty,termios
 import time
+import pickle
 
 class Gameplay :
     
@@ -21,12 +22,18 @@ class Gameplay :
     def __call__(self) :
         self.start_time = time.time()
         self.last_refresh_time = self.start_time
+        res = -2
+        
         while(True) :
             # print(time.time() - self.last_refresh_time)
-            k = get.input_to(self.getch, timeout=0.5)
+            
+            k = get.input_to(self.getch, timeout=0.2)
+            
+         
             
             if k == 'q' :
-                return self.events
+                res = 0
+                break
             # while(time.time() - self.last_refresh_time < 0.33) :
             #     print(time.time() - self.last_refresh_time)
             #     k = get.input_to(self.getch)
@@ -40,11 +47,21 @@ class Gameplay :
             
             
             # print(self.frame_count, ': ', k)
-            self.village.render()
+            if k is not None :
+                self.events[self.frame_count] = k
+            
+            res = self.village.render(k)
+            
+            if (res in [0, -1, 1]) :
+                break
         
-    
-class Event :
-    pass
+        
+        return [res, self.events]
+            
+        
+        
+        
+
 
 
 def main() :
@@ -52,6 +69,7 @@ def main() :
     # my_village.render()
     game = Gameplay()
     game_log = game()
+    print(game_log)
 
 if __name__ == '__main__' :
     main()
